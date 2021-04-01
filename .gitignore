@@ -1,0 +1,14 @@
+Mars_Modifications
+
+temp/*
+
+internal/ModelSimContainer/*
+!internal/ModelSimContainer/.gitkeep
+
+internal/QuartusWork
+
+config.txt
+
+.vscode/
+__pycache__/
+*.pyc
