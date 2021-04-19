@@ -10,7 +10,7 @@
 --
 --
 -- NOTES:
--- 03/11/21 by JB::Design created.
+-- 04/19/21 by JB::Design created.
 -------------------------------------------------------------------------
 -- library declaration
 library IEEE;
@@ -24,17 +24,19 @@ entity ID_EX_reg is
 	     i_readData1 	: in std_logic_vector(31 downto 0);
 	     i_readData2 	: in std_logic_vector(31 downto 0);
 	     i_signExtImmed 	: in std_logic_vector(31 downto 0);
+	     i_jumpAddress 	: in std_logic_vector(31 downto 0);
 	     i_instr_20_16 	: in std_logic_vector(4 downto 0);
 	     i_instr_15_11 	: in std_logic_vector(4 downto 0);
-	     i_control_bits 	: in std_logic_vector(13 downto 0);
+	     i_control_bits 	: in std_logic_vector(14 downto 0);
 
 	     o_PC_4		: out std_logic_vector(31 downto 0);
 	     o_readData1 	: out std_logic_vector(31 downto 0);
 	     o_readData2 	: out std_logic_vector(31 downto 0);
 	     o_signExtImmed 	: out std_logic_vector(31 downto 0);
+	     o_jumpAddress 	: out std_logic_vector(31 downto 0);
 	     o_instr_20_16 	: out std_logic_vector(4 downto 0);
 	     o_instr_15_11 	: out std_logic_vector(4 downto 0);
-	     o_control_bits 	: out std_logic_vector(13 downto 0));
+	     o_control_bits 	: out std_logic_vector(14 downto 0));
 end ID_EX_reg;
 
 -- architecture
@@ -76,6 +78,14 @@ begin
 		 o_Q	=> o_readData2);
 
   x4: dffg_N
+	generic map(N => 32)
+	port map(i_CLK 	=> i_CLK,
+		 i_RST 	=> i_RST,
+		 i_WE	=> '1',
+		 i_D	=> i_signExtImmed,
+		 o_Q	=> o_signExtImmed);
+
+  x4_5: dffg_N
 	generic map(N => 32)
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
