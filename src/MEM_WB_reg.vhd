@@ -40,7 +40,7 @@ entity EX_MEM_reg is
 	     o_PC_4		: out std_logic_vector(31 downto 0);
 	     o_finalJumpAddr	: out std_logic_vector(31 downto 0);
 	     o_branchAddr	: out std_logic_vector(31 downto 0);
-	     i_memReadData 	: out std_logic_vector(31 downto 0);
+	     o_memReadData 	: out std_logic_vector(31 downto 0);
 	     o_aluOut	 	: out std_logic_vector(31 downto 0);
 
 	     o_writeReg 	: out std_logic_vector(4 downto 0);

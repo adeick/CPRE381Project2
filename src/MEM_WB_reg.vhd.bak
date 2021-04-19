@@ -154,35 +154,23 @@ begin
 		 i_D	=> i_MemtoReg,
 		 o_Q	=> o_MemtoReg);
 
-  x3_5: dffg
-	port map(i_CLK 	=> i_CLK,
-		 i_RST 	=> i_RST,
-		 i_WE	=> '1',
-		 i_D	=> i_weMem,
-		 o_Q	=> o_weMem);
 
-  x3_6: dffg
+  x3_5: dffg
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
 		 i_WE	=> '1',
 		 i_D	=> i_weReg,
 		 o_Q	=> o_weReg);
 
-  x3_7: dffg
-	port map(i_CLK 	=> i_CLK,
-		 i_RST 	=> i_RST,
-		 i_WE	=> '1',
-		 i_D	=> i_branch,
-		 o_Q	=> o_branch);
 
-  x3_8: dffg
+  x3_6: dffg
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
 		 i_WE	=> '1',
 		 i_D	=> i_j,
 		 o_Q	=> o_j);
 
-  x3_9: dffg
+  x3_7: dffg
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
 		 i_WE	=> '1',
