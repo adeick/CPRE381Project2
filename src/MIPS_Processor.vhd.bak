@@ -344,7 +344,7 @@ begin
   pcReg: MIPS_pc
     port map(i_CLK => iClk,
     	     i_RST => iRST,
-             i_D   => -- TODO, 
+             i_D   => s_inputPC, 
              o_Q   => s_NextInstAddr);
 
   IMem: mem
