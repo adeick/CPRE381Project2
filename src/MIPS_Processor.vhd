@@ -126,39 +126,14 @@ architecture structure of MIPS_processor is
 ----------------------------------------------------------------------------------
   signal s_PCPlusFour_WB   : std_logic_vector(N-1 downto 0);
   signal s_aluOut_WB, s_finalJumpAddress_WB, s_branchAddress_WB, s_memReadData_WB : std_logic_vector(31 downto 0);
+  signal s_MemToReg0    : std_logic_vector(31 downto 0);
+  signal s_normalOrBranch  : std_logic_vector(31 downto 0);
+  signal s_inputPC: std_logic_vector(31 downto 0); --wire from the jump mux
 
   --control signals
   signal s_jal_WB, s_MemtoReg_WB, s_jump_WB, s_branch_check_WB    : std_logic; 
 
 ----------------------------------------------------------------------------------
-
-
-
-
-
-
-  
-  signal s_inputPC: std_logic_vector(31 downto 0); --wire from the jump mux
-
-
-  --Control Signals
-
-
-
-  --Addressing Signals
-
-  signal s_MemToReg0    : std_logic_vector(31 downto 0);
-
-
-  signal s_normalOrBranch  : std_logic_vector(31 downto 0);
-  
---ALU Items
---Inputs:
-  -- s_RegOutReadData1 and s_immMuxOut
-  -- s_ALUOp
---Outputs:
-
---  s_ALUResult is named s_DMemAddr
 
 signal s1, s2, s3 : std_logic; --don't care output from adder and ALU
 
@@ -369,7 +344,7 @@ begin
   pcReg: MIPS_pc
     port map(i_CLK => iClk,
     	     i_RST => iRST,
-             i_D   => -- TODO, 
+             i_D   => s_inputPC, 
              o_Q   => s_NextInstAddr);
 
   IMem: mem
@@ -641,31 +616,35 @@ begin
 ------------------------------------------------------------------------------------
   oALUOut <= s_aluOut_WB; --oALU is for synthesis
 
+  -- write back muxes
   jalData: mux2t1_N
     generic map(N => 32) 
-    port map(i_S  => s_jal,
-             i_D0 => s_DMemAddr, --This is the ALU Output
-             i_D1 => s_PCPlusFour,
+    port map(i_S  => s_jal_WB,
+             i_D0 => s_aluOut_WB, --This is the ALU Output
+             i_D1 => s_PCPlusFour_WB,
              o_O  => s_MemToReg0);
-        
+
+  MemtoReg: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_MemtoReg_WB,
+             i_D0 => s_MemToReg0, 
+             i_D1 => s_memReadData_WB,
+             o_O  => s_RegWrData);
+
+  -- branch/jump muxes
   Branch: mux2t1_N
     generic map(N => 32) 
-    port map(i_S  => (s_Branch AND s_ALUBranch),
-             i_D0 => s_PCPlusFour, 
-             i_D1 => s_branchAddress,
+    port map(i_S  => s_branch_check_WB,
+             i_D0 => s_PCPlusFour_IF, 
+             i_D1 => s_branchAddress_WB,
              o_O  => s_normalOrBranch);
   Jump: mux2t1_N
     generic map(N => 32) 
-    port map(i_S  => s_jump,
+    port map(i_S  => s_jump_WB,
              i_D0 => s_normalOrBranch, 
-             i_D1 => s_finalJumpAddress,
+             i_D1 => s_finalJumpAddress_WB,
              o_O  => s_inputPC);
-  MemtoReg: mux2t1_N
-    generic map(N => 32) 
-    port map(i_S  => s_MemtoReg,
-             i_D0 => s_MemToReg0, 
-             i_D1 => s_DMemOut,
-             o_O  => s_RegWrData);
+
   
         
 ------------------------------------------------------------------------------------
