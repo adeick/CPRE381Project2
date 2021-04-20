@@ -277,15 +277,15 @@ signal s1, s2, s3 : std_logic; --don't care output from adder and ALU
 	     o_writeReg 	: out std_logic_vector(4 downto 0);
 
 	-- one bit outputs
-	     o_zero		: out std_logic;
-	     o_overflow		: out std_logic;
-	     o_jal		: out std_logic;
-	     o_MemtoReg		: out std_logic;
+	     o_zero		  : out std_logic;
+	     o_overflow	: out std_logic;
+	     o_jal		  : out std_logic;
+	     o_MemtoReg	: out std_logic;
 	     o_weMem		: out std_logic;
 	     o_weReg		: out std_logic;
 	     o_branch		: out std_logic;
-	     o_j		: out std_logic;
-	     o_halt		: out std_logic);
+	     o_j		    : out std_logic;
+	     o_halt		  : out std_logic);
   end component;
 
   component MEM_WB_reg is 
@@ -336,7 +336,7 @@ begin
 --------------------------------- IF STAGE -----------------------------------------
 ------------------------------------------------------------------------------------
 
- -- added by professor in orginial code
+ -- added by professor in original code
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
