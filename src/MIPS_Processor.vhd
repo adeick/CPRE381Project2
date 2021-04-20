@@ -58,7 +58,6 @@ architecture structure of MIPS_processor is
 ----------------------------- IF STAGE signals -----------------------------------
 ----------------------------------------------------------------------------------
   signal s_PCPlusFour_IF   : std_logic_vector(N-1 downto 0);
-  signal s_Inst_IF         : std_logic_vector(N-1 downto 0);
 
 
 ----------------------------- ID STAGE signals -----------------------------------
@@ -120,15 +119,16 @@ architecture structure of MIPS_processor is
   signal s_RegWrAddr_MEM      : std_logic_vector(4 downto 0);
 
  --control signals
-  signal s_jal_MEM, s_MemtoReg_MEM, s_DMemWr_MEM, s_RegWr_MEM, s_Branch_MEM, s_jump_MEM, s_Halt_MEM    : std_logic; 
+  signal s_jal_MEM, s_MemtoReg_MEM, s_DMemWr_MEM, s_RegWr_MEM, s_Branch_MEM, s_jump_MEM, s_Halt_MEM, s_branch_check_MEM    : std_logic; 
 
 
 ----------------------------- WB STAGE signals ----------------------------------
 ----------------------------------------------------------------------------------
   signal s_PCPlusFour_WB   : std_logic_vector(N-1 downto 0);
+  signal s_aluOut_WB, s_finalJumpAddress_WB, s_branchAddress_WB, s_memReadData_WB : std_logic_vector(31 downto 0);
 
   --control signals
-  signal s_jal_WB, s_MemtoReg_WB, s_RegWr_WB, s_jump_WB, s_Halt_WB    : std_logic; 
+  signal s_jal_WB, s_MemtoReg_WB, s_jump_WB, s_branch_check_WB    : std_logic; 
 
 ----------------------------------------------------------------------------------
 
@@ -379,7 +379,7 @@ begin
              addr => s_IMemAddr(11 downto 2),
              data => iInstExt,
              we   => iInstLd,
-             q    => s_Inst_IF);
+             q    => s_Inst);
 
   addFour: addersubtractor
     generic map(N => 32)
@@ -393,7 +393,7 @@ begin
     port map(i_CLK	   => iCLK,
 	     i_RST	   => iRST,
 	     i_PC_4	   => s_PCPlusFour_IF,
-	     i_instruction => s_Inst_IF,
+	     i_instruction => s_Inst,
 	     o_PC_4	   => s_PCPlusFour_ID,
 	     o_instruction => s_Inst_ID);
 
@@ -422,11 +422,11 @@ begin
   --RegFile: --
   registers: regfile 
     port map(clk   => iCLK,--std_logic;
-	     i_wA  => --TODO ,--std_logic_vector(4 downto 0);
-	     i_wD	 => --TODO ,--std_logic_vector(31 downto 0);
-	     i_wC	 => --TODO ,--std_logic;
-	     i_r1	 => s_Inst_ID(25 downto 21),-- rs;
-	     i_r2	 => s_Inst_ID(20 downto 16),-- rt;
+	     i_wA  => s_RegWrAddr ,--std_logic_vector(4 downto 0);
+	     i_wD  => s_RegWrData ,--std_logic_vector(31 downto 0);
+	     i_wC  => s_RegWr ,--std_logic;
+	     i_r1  => s_Inst_ID(25 downto 21),-- rs;
+	     i_r2  => s_Inst_ID(20 downto 16),-- rt;
 	     reset => iRST,--std_logic;
     	     o_d1  => s_RegOutReadData1_ID,-- std_logic_vector(31 downto 0);
     	     o_d2  => s_RegOutReadData2_ID);-- std_logic_vector(31 downto 0));
@@ -578,38 +578,14 @@ begin
 
 ------------------------------------------------------------------------------------
 
+------------------------------------------------------------------------------------
+--------------------------------- MEM STAGE ----------------------------------------
+------------------------------------------------------------------------------------
+  s_branch_check_MEM <= s_Branch_MEM AND s_ALUBranch_MEM;
+  s_DMemAddr <= s_aluOut_MEM;
+  s_DMemData <= s_RegOutReadData2_MEM;
+  s_DMemWr   <= s_DMemWr_MEM;
 
-
-        
-  jalData: mux2t1_N
-  generic map(N => 32) 
-  port map(i_S   => s_jal,
-        i_D0      => s_DMemAddr, --This is the ALU Output
-        i_D1      => s_PCPlusFour,
-        o_O       => s_MemToReg0);
-        
-
-
-
-  Branch: mux2t1_N
-  generic map(N => 32) 
-  port map(i_S    => (s_Branch AND s_ALUBranch),
-        i_D0      => s_PCPlusFour, 
-        i_D1      => s_branchAddress,
-        o_O       => s_normalOrBranch);
-  Jump: mux2t1_N
-  generic map(N => 32) 
-  port map(i_S    => s_jump,
-        i_D0      => s_normalOrBranch, 
-        i_D1      => s_finalJumpAddress,
-        o_O       => s_inputPC);
-  MemtoReg: mux2t1_N
-  generic map(N => 32) 
-  port map(i_S    => s_MemtoReg,
-        i_D0      => s_MemToReg0, 
-        i_D1      => s_DMemOut,
-        o_O       => s_RegWrData);
-  
 
   DMem: mem
     generic map(ADDR_WIDTH => 10,
@@ -620,10 +596,78 @@ begin
              we   => s_DMemWr,
              q    => s_DMemOut);
 
-   oALUOut <= s_DMemAddr; --oALU is for synthesis
-  -- TODO: Ensure that s_Halt is connected to an output control signal produced from decoding the Halt instruction (Opcode: 01 0100)
-  -- TODO: Ensure that s_Ovfl is connected to the overflow output of your ALU
+  MEM_WB: MEM_WB_reg
+    port map(i_CLK	     => iCLK,
+	     i_RST	     => iRST,
 
-  -- TODO: Implement the rest of your processor below this comment! 
+	     i_PC_4	     => s_PCPlusFour_MEM,
+	     i_finalJumpAddr => s_finalJumpAddress_MEM,
+	     i_branchAddr    => s_branchAddress_MEM,
+	     i_memReadData   => s_DMemOut,
+	     i_aluOut	     => s_aluOut_MEM,
+
+	     i_writeReg      => s_RegWrAddr_MEM,
+
+	-- one bit inputs
+	     i_branchCheck   => s_branch_check_MEM,
+	     i_overflow      => s_Ovfl_MEM,
+	     i_jal	     => s_jal_MEM,
+	     i_MemtoReg	     => s_MemtoReg_MEM,
+	     i_weReg	     => s_RegWr_MEM,
+	     i_j	     => s_jump_MEM,
+	     i_halt	     => s_Halt_MEM,
+
+	     o_PC_4	     => s_PCPlusFour_WB,
+	     o_finalJumpAddr => s_finalJumpAddress_WB ,
+	     o_branchAddr    => s_branchAddress_WB,
+	     o_memReadData   => s_memReadData_WB,
+	     o_aluOut	     => s_aluOut_WB,
+
+	     o_writeReg      => s_RegWrAddr,
+
+	-- one bit outputs
+	     o_branchCheck   => s_branch_check_WB,
+	     o_overflow      => s_Ovfl,
+	     o_jal	     => s_jal_WB,
+	     o_MemtoReg	     => s_MemtoReg_WB,
+	     o_weReg	     => s_RegWr,
+	     o_j	     => s_jump_WB,
+	     o_halt	     => s_Halt);
+        
+------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------
+--------------------------------- WB STAGE -----------------------------------------
+------------------------------------------------------------------------------------
+  oALUOut <= s_aluOut_WB; --oALU is for synthesis
+
+  jalData: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_jal,
+             i_D0 => s_DMemAddr, --This is the ALU Output
+             i_D1 => s_PCPlusFour,
+             o_O  => s_MemToReg0);
+        
+  Branch: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => (s_Branch AND s_ALUBranch),
+             i_D0 => s_PCPlusFour, 
+             i_D1 => s_branchAddress,
+             o_O  => s_normalOrBranch);
+  Jump: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_jump,
+             i_D0 => s_normalOrBranch, 
+             i_D1 => s_finalJumpAddress,
+             o_O  => s_inputPC);
+  MemtoReg: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_MemtoReg,
+             i_D0 => s_MemToReg0, 
+             i_D1 => s_DMemOut,
+             o_O  => s_RegWrData);
+  
+        
+------------------------------------------------------------------------------------
 
 end structure;
