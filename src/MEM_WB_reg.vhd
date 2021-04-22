@@ -16,7 +16,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 -- entity
-entity EX_MEM_reg is
+entity MEM_WB_reg is
 	port(i_CLK		: in std_logic;
 	     i_RST		: in std_logic; -- (1 sets reg to 0)
 
@@ -54,10 +54,10 @@ entity EX_MEM_reg is
 	     o_j		: out std_logic;
 	     o_halt		: out std_logic);
 
-end EX_MEM_reg;
+end MEM_WB_reg;
 
 -- architecture
-architecture structural of EX_MEM_reg is
+architecture structural of MEM_WB_reg is
 
   component dffg is
   port(i_CLK        : in std_logic;     -- Clock input

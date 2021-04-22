@@ -16,7 +16,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 -- entity
-entity EX_MEM_reg is
+entity MEM_WB_reg is
 	port(i_CLK		: in std_logic;
 	     i_RST		: in std_logic; -- (1 sets reg to 0)
 
@@ -40,7 +40,7 @@ entity EX_MEM_reg is
 	     o_PC_4		: out std_logic_vector(31 downto 0);
 	     o_finalJumpAddr	: out std_logic_vector(31 downto 0);
 	     o_branchAddr	: out std_logic_vector(31 downto 0);
-	     i_memReadData 	: out std_logic_vector(31 downto 0);
+	     o_memReadData 	: out std_logic_vector(31 downto 0);
 	     o_aluOut	 	: out std_logic_vector(31 downto 0);
 
 	     o_writeReg 	: out std_logic_vector(4 downto 0);
