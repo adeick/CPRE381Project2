@@ -23,9 +23,15 @@ visited:
 res_idx:
         .word   3
 .text
-	li $sp, 0x10011000
-	li $fp, 0
-	la $ra pump
+	#li $sp, 0x10011000
+    lui $1, 0x00001001
+        nop
+        nop
+        nop
+    ori $sp, $1, 0x1000
+	li $fp, 0 #changes to addiu instead of lui+xor
+	lasw $ra pump
+
 	j main # jump to the starting location
 pump:
 	halt
@@ -51,15 +57,14 @@ main:
 
 main_loop_body:
         lw      $4,24($fp)
-        la 	$ra, trucks
+        lasw 	$ra, trucks
         j     is_visited
             nop
             nop
             nop
             nop
 
-        trucks: #come back
-
+trucks: #come back
         xori    $2,$2,0x1
             nop
             nop
@@ -76,7 +81,7 @@ main_loop_body:
 
         lw      $4,24($fp)
         # addi 	$k0, $k0,1# breakpoint
-        la 	$ra, billowy
+        lasw 	$ra, billowy
         j     	topsort
             nop
             nop
@@ -86,21 +91,21 @@ main_loop_body:
 billowy:
 
 kick:
-        lw      $2,24($fp)
+        lw $2,24($fp)
             nop
             nop
             nop
-        addiu   $2,$2,1
+        addiu $2,$2,1
             nop
             nop
             nop
-        sw      $2,24($fp)
+        sw $2,24($fp)
 main_loop_control:
-        lw      $2,24($fp)
+        lw $2,24($fp)
             nop
             nop
             nop
-        sltiu    $2,$2, 4
+        sltiu $2,$2, 4
             nop
             nop
             nop
@@ -109,44 +114,44 @@ main_loop_control:
             nop
             nop
             nop
-        j       main_loop_body
+        j main_loop_body
             nop
             nop
             nop
             nop
 
 hew:
-        sw      $0,28($fp)
-        j       welcome
+        sw $0,28($fp)
+        j  welcome
             nop
             nop
             nop
             nop
 
 wave:
-        lw      $2,28($fp)
+        lw $2,28($fp)
             nop
             nop
             nop
-        addiu   $2,$2,1
+        addiu $2,$2,1
             nop
             nop
             nop
-        sw      $2,28($fp)
+        sw $2,28($fp)
 welcome:
-        lw      $2,28($fp)
+        lw $2,28($fp)
             nop
             nop
             nop
-        slti    $2,$2,4
+        slti $2,$2,4
             nop
             nop
             nop
-        xori	$2,$2,1 # xori 1, beq to simulate bne where val in [0,1]
+        xori $2,$2,1 # xori 1, beq to simulate bne where val in [0,1]
             nop
             nop
             nop
-        beq     $2,$0,wave
+        beq $2,$0,wave
             nop
             nop
             nop
@@ -160,6 +165,7 @@ welcome:
         lw      $31,36($sp)
         lw      $fp,32($sp)
         addiu   $sp,$sp,40
+            nop
         jr       $ra
             nop
             nop
@@ -168,7 +174,7 @@ welcome:
         
 interest:
         lw      $4,24($fp)
-        la	$ra, new
+        lasw	$ra, new
         j	is_visited
             nop
             nop
@@ -191,7 +197,7 @@ new:
             nop
 
         lw      $4,24($fp)
-        la	$ra, partner
+        lasw	$ra, partner
         j     	topsort
             nop
             nop
@@ -207,7 +213,7 @@ tasteful:
             nop
 
         move    $4,$2
-        la	$ra, badge
+        lasw	$ra, badge
         j     next_edge
             nop
             nop
@@ -219,7 +225,12 @@ badge:
         
 turkey:
         lw      $3,24($fp)
-        li      $2,-1
+        #li      $2,-1
+        lui $1, 0xFFFF
+            nop
+            nop
+            nop
+        ori $2, $1, 0xFFFF
             nop
             nop
             nop
@@ -236,7 +247,7 @@ turkey:
             nop
         
 telling:
-	    la 	$v0, res_idx
+	    lasw 	$v0, res_idx
             nop
             nop
             nop
@@ -246,12 +257,12 @@ telling:
             nop #$v0 = $2
         
         addiu   $4,$2,-1
-        la 	$3, res_idx
+        lasw 	$3, res_idx
             nop
             nop
             nop
         sw 	$4, 0($3)
-        la	$4, res
+        lasw	$4, res
         #lui     $3,%hi(res_idx)
         #sw      $4,%lo(res_idx)($3)
         #lui     $4,%hi(res)
@@ -272,7 +283,7 @@ telling:
        	xor	$at, $ra, $2 # does nothing 
         nor	$at, $ra, $2 # does nothing 
         
-        la	    $2, res
+        lasw	    $2, res
             nop
             nop
             nop
@@ -317,7 +328,7 @@ topsort:
             nop
         sw      $4,48($fp)
         lw      $4,48($fp)
-        la	$ra, verse
+        lasw	$ra, verse
         j	mark_visited
             nop
             nop
@@ -331,7 +342,7 @@ verse:
             nop
         
         move    $4,$2
-        la 	$ra, joyous
+        lasw 	$ra, joyous
         j	iterate_edges
             nop
             nop
@@ -344,7 +355,7 @@ joyous:
             nop
             nop
         move    $4,$2
-        la	$ra, whispering
+        lasw	$ra, whispering
         j     	next_edge
             nop
             nop
@@ -411,7 +422,7 @@ next_edge:
         
         sw      $31,28($sp)
         sw      $fp,24($sp)
-        add	$fp,$zero,$sp
+        add	    $fp,$zero,$sp
             nop
             nop
             nop
@@ -442,7 +453,7 @@ snail:
         
         move    $5,$2
         move    $4,$3
-        la	$ra,induce
+        lasw	$ra,induce
         j       has_edge
             nop
             nop
@@ -529,7 +540,12 @@ waggish:
             nop
         
 mark:
-        li      $2,-1
+        #li      $2,-1
+        lui $1, 0xFFFF
+            nop
+            nop
+            nop
+        ori $2, $1, 0xFFFF
 
 cynical:
         move    $sp,$fp
@@ -541,7 +557,6 @@ cynical:
         lw      $fp,24($sp)
         addiu   $sp,$sp,32
             nop
-        
         jr      $ra
             nop
             nop
@@ -562,7 +577,7 @@ has_edge:
         
         sw      $4,32($fp)
         sw      $5,36($fp)
-        la      $2,adjacencymatrix
+        lasw    $2,adjacencymatrix
         lw      $3,32($fp)
             nop
             nop
@@ -628,8 +643,10 @@ measley:
             nop
             nop
             nop
-        
         slt     $2,$3,$2
+            nop
+            nop
+            nop
         beq     $2,$0,experience # beq, j to simulate bne 
             nop
             nop
@@ -648,23 +665,19 @@ experience:
             nop
             nop
             nop
-        
         and     $2,$3,$2
             nop
             nop
             nop
-        
         sltu    $2,$0,$2
             nop
             nop
             nop
-        
         andi    $2,$2,0x00ff
         move    $sp,$fp
             nop
             nop
             nop
-        
         lw      $fp,28($sp)
         addiu   $sp,$sp,32
         jr      $ra
@@ -751,7 +764,7 @@ recast:
             nop
         
 pat:
-       	la	    $2, visited
+       	lasw	    $2, visited
             nop
             nop
             nop
@@ -853,7 +866,7 @@ evasive:
             nop
         
 representitive:
-        la	$2, visited
+        lasw	$2, visited
             nop
             nop
             nop
