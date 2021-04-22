@@ -110,7 +110,7 @@ begin
 		 o_Q	=> o_instr_15_11);
 		
   x7: dffg_N
-	generic map(N => 14)
+	generic map(N => 15)
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
 		 i_WE	=> '1',

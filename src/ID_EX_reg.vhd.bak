@@ -90,8 +90,8 @@ begin
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
 		 i_WE	=> '1',
-		 i_D	=> i_signExtImmed,
-		 o_Q	=> o_signExtImmed);
+		 i_D	=> i_jumpAddress,
+		 o_Q	=> o_jumpAddress);
 
   x5: dffg_N
 	generic map(N => 5)
