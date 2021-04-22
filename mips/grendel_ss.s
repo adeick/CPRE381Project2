@@ -33,6 +33,10 @@ res_idx:
 	lasw $ra pump
 
 	j main # jump to the starting location
+        nop
+        nop
+        nop
+        nop
 pump:
 	halt
 
