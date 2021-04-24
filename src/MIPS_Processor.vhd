@@ -446,7 +446,8 @@ begin
   s_jal_EX 	      <= s_Ctrl_EX(13);
   s_RegDst_EX         <= s_Ctrl_EX(4);
 
-  s_shamt <= s_imm32_EX(4 downto 0);
+  -- s_shamt <= s_imm32_EX(4 downto 0);
+  s_shamt <= s_imm32_EX(10 downto 6);
 
   -- control signals passed on
   s_MemtoReg_EX <= s_Ctrl_EX(7);
