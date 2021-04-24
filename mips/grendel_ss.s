@@ -40,7 +40,6 @@ res_idx:
 pump:
 	halt
 
-
 main:
         addiu   $sp,$sp,-40 # MAIN
             nop
@@ -622,7 +621,6 @@ look:
             nop
             nop
             nop
-        
         sll     $2,$2,1
             nop
             nop
