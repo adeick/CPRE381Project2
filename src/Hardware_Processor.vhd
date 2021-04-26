@@ -74,9 +74,14 @@ architecture structure of Hardware_Processor is
   signal s_funcCode : std_logic_vector(5 downto 0);--instruction bits[5-0]
 
   -- reg file signals
-  signal s_RegOutReadData1_ID : std_logic_vector(N-1 downto 0);
-  signal s_RegOutReadData2_ID : std_logic_vector(N-1 downto 0);
+  signal s_RegOutReadData1 : std_logic_vector(N-1 downto 0);
+  signal s_RegOutReadData2 : std_logic_vector(N-1 downto 0);
 
+  -- forwarding signals
+  signal s_fwdSwitch1, s_fwdSwitch2 : std_logic;
+
+  --final signals
+  signal s_DecodeData1_ID, s_DecodeData2_ID : std_logic_vector(31 downto 0);
 
 ----------------------------- EX STAGE signals -----------------------------------
 ----------------------------------------------------------------------------------
@@ -211,6 +216,15 @@ signal s1, s2, s3 : std_logic; --don't care output from adder and ALU
     i_D   : in std_logic_vector(31 downto 0); --s_inputPC, 
     o_Q   : out std_logic_vector(31 downto 0));--=> s_NextInstAddr);
   end component;
+
+  component forwarding_unit is
+	port(i_readAddr1  	  	: in std_logic_vector(4 downto 0);
+	     i_readAddr2	  	: in std_logic_vector(4 downto 0);
+	     i_writeAddr	  	: in std_logic_vector(4 downto 0);
+         i_writeEnable      : in std_logic;
+         o_fwdSwitch1		: out std_logic; --1 if forwarding should be used, 0 otherwise
+         o_fwdSwitch2		: out std_logic);
+    end component;
 
 ------------- Stages Components --------------------
   component IF_ID_reg is 
@@ -394,17 +408,43 @@ begin
   s_jumpAddress_ID(27 downto 2) <= s_Inst_ID(25 downto 0); --Instruction bits[25-0] into bits[27-2] of jumpAddr
   s_jumpAddress_ID(31 downto 28) <= s_PCPlusFour_ID(31 downto 28); --PC+4 bits[31-28] into bits[31-28] of jumpAddr
 
+    --Forwarding Unit--
+    forward: forwarding_unit
+    port map(i_readAddr1  	  	=>  s_Inst_ID(25 downto 21),--in std_logic_vector(4 downto 0);
+             i_readAddr2	  	=>  s_Inst_ID(20 downto 16),--in std_logic_vector(4 downto 0);
+             i_writeAddr	  	=>  s_RegWrAddr,--in std_logic_vector(4 downto 0);
+             i_writeEnable      =>  s_RegWr,--in std_logic;
+             o_fwdSwitch1		=>  s_fwdSwitch1,--out std_logic; --1 if forwarding should be used, 0 otherwise
+             o_fwdSwitch2		=>  s_fwdSwitch2,--out std_logic);
+    end forwarding_unit;
+
   --RegFile: --
   registers: regfile 
     port map(clk   => iCLK,--std_logic;
-	     i_wA  => s_RegWrAddr ,--std_logic_vector(4 downto 0);
-	     i_wD  => s_RegWrData ,--std_logic_vector(31 downto 0);
-	     i_wC  => s_RegWr ,--std_logic;
-	     i_r1  => s_Inst_ID(25 downto 21),-- rs;
-	     i_r2  => s_Inst_ID(20 downto 16),-- rt;
-	     reset => iRST,--std_logic;
-    	     o_d1  => s_RegOutReadData1_ID,-- std_logic_vector(31 downto 0);
-    	     o_d2  => s_RegOutReadData2_ID);-- std_logic_vector(31 downto 0));
+	    i_wA  => s_RegWrAddr ,--std_logic_vector(4 downto 0);
+	    i_wD  => s_RegWrData ,--std_logic_vector(31 downto 0);
+	    i_wC  => s_RegWr ,--std_logic;
+	    i_r1  => s_Inst_ID(25 downto 21),-- rs;
+	    i_r2  => s_Inst_ID(20 downto 16),-- rt;
+	    reset => iRST,--std_logic;
+    	o_d1  => s_RegOutReadData1,-- std_logic_vector(31 downto 0);
+    	o_d2  => s_RegOutReadData2);-- std_logic_vector(31 downto 0));
+
+    --Forwarding Muxes
+    fwdMux1: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_fwdSwitch1,
+          i_D0 => s_RegOutReadData1,
+          i_D1 => s_RegWrData,
+          o_O  => s_DecodeData1_ID);
+
+    fwdMux2: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_fwdSwitch2,
+          i_D0 => s_RegOutReadData2,
+          i_D1 => s_RegWrData,
+          o_O  => s_DecodeData2_ID);
+
 
   signExtender: extender
     port map(i_I => s_imm16_ID, --in std_logic_vector(15 downto 0);     -- Data value input
@@ -416,8 +456,8 @@ begin
 	     i_RST	    => iRST,
 
 	     i_PC_4	    => s_PCPlusFour_ID,
-	     i_readData1    => s_RegOutReadData1_ID,
-	     i_readData2    => s_RegOutReadData2_ID,
+	     i_readData1    => s_DecodeData1_ID, --s_RegOutReadData1, 
+	     i_readData2    => s_DecodeData2_ID, --s_RegOutReadData2, 
 	     i_signExtImmed => s_imm32_ID,
 	     i_jumpAddress  => s_jumpAddress_ID,
 	     i_instr_20_16  => s_Inst_ID(20 downto 16), -- rt
