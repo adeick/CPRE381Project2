@@ -74,8 +74,17 @@ main:
   addi	$t1, $zero, 0
 bubble:
   addi  $t8, $sp, 8     #ptr:     original pointer to a[]
+  nop
+  nop
+  nop
   addi  $t7, $zero, 0   #bool:    swapped
+  nop
+  nop
+  nop
   addi  $t6, $zero, 4   #int:     i
+  nop
+  nop
+  nop
 
 whileloop:
   slt   $t9, $t6, $a1
