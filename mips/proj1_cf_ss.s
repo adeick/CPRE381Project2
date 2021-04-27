@@ -3,6 +3,9 @@
 .text
 main:
 	addi 	$sp, $zero, 0x10011000
+	nop
+	nop
+	nop
 	addi	$a0, $zero, 0x0
 	addi	$a1, $zero, 0x1
 	addi	$a2, $zero, 0x2
