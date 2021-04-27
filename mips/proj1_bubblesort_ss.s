@@ -36,6 +36,9 @@ main:
   nop
   nop
   sw	$t1, 0($a0)
+  nop
+  nop
+  nop
   addi	$t1, $zero, 4
   nop
   nop
@@ -74,9 +77,9 @@ bubble:
   nop
   nop
   nop
-  addiu  $t8, $sp, 8     #ptr:     original pointer to a[]
-  addiu  $t7, $zero, 0   #bool:    swapped
-  addiu  $t6, $zero, 4   #int:     i
+  addi  $t8, $sp, 8     #ptr:     original pointer to a[]
+  addi  $t7, $zero, 0   #bool:    swapped
+  addi  $t6, $zero, 4   #int:     i
 
 whileloop:
   nop
