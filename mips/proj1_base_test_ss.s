@@ -3,8 +3,11 @@
 
 .text
 main:
-	addi 	$sp, $zero, 0xF000
-	nop
+	lui 	$1, 0x00001001
+        nop
+        nop
+        nop
+        ori 	$sp, $1, 0x1000
 	nop
 	nop
 	nop
