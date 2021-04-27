@@ -126,8 +126,9 @@ brnchtst:
 	nop
 	nop
 	nop
-	bne	$t0, 1, postbrnch
-	beq	$t0, 1, postbrnch
+	nop
+	bne	$t0, 1, abranch
+	beq	$t0, 1, bbranch
 	
 jmplnktst:
 	nop
@@ -138,8 +139,19 @@ jmplnktst:
 	add	$t6, $t7, $t8		#0x18
 	jr	$ra			#return to brnchtst
 	
+abranch:
+	nop
+	nop
+	nop
+	nop
+	j 	postbrnch
+	
+bbranch:
+	nop
+	nop
+	nop
+	nop
+	j	postbrnch
+	
 postbrnch:
-	nop
-	nop
-	nop
-	nop
+	halt
