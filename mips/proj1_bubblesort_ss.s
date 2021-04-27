@@ -21,28 +21,35 @@ main:
   sub	$sp, $sp, 32
   nop
   nop
+  nop
   addi	$a0, $sp, 8
   addi	$a1, $zero, 20
+  nop
   nop
   nop
   sw	$a1, 4($sp)
   addi	$t1, $zero, 5
   nop
   nop
+  nop
   sw	$t1, 0($a0)
   addi	$t1, $zero, 4
+  nop
   nop
   nop
   sw	$t1, 4($a0)
   addi	$t1, $zero, 3
   nop
   nop
+  nop
   sw	$t1, 8($a0)
   addi	$t1, $zero, 2
   nop
   nop
+  nop
   sw	$t1, 12($a0)
   addi	$t1, $zero, 1
+  nop
   nop
   nop
   sw	$t1, 16($a0)
@@ -64,12 +71,15 @@ whileloop:
   slt   $t9, $t6, $a1
   nop
   nop
+  nop
   bne   $t9, 1, isswapped
   lw	$t0, 0($t8)             #load a = a[i]
   lw	$t1, 4($t8)             #load b = a[i+1]
   nop
   nop
+  nop
   slt	$t2, $t1, $t0           #if a[i+1] < a[i]
+  nop
   nop
   nop
   bne	$t2, 1, preloop        	#if a[i+1] > a[i], go to else
