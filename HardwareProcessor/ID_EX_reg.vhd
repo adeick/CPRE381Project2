@@ -25,8 +25,9 @@ entity ID_EX_reg is
 	     i_readData2 	: in std_logic_vector(31 downto 0);
 	     i_signExtImmed 	: in std_logic_vector(31 downto 0);
 	     i_jumpAddress 	: in std_logic_vector(31 downto 0);
-	     i_instr_20_16 	: in std_logic_vector(4 downto 0);
-	     i_instr_15_11 	: in std_logic_vector(4 downto 0);
+	     --i_instr_20_16 	: in std_logic_vector(4 downto 0);
+	     --i_instr_15_11 	: in std_logic_vector(4 downto 0);
+		 i_regDst			: in std_logic_vector(4 downto 0);
 	     i_control_bits 	: in std_logic_vector(14 downto 0);
 
 	     o_PC_4		: out std_logic_vector(31 downto 0);
@@ -34,9 +35,10 @@ entity ID_EX_reg is
 	     o_readData2 	: out std_logic_vector(31 downto 0);
 	     o_signExtImmed 	: out std_logic_vector(31 downto 0);
 	     o_jumpAddress 	: out std_logic_vector(31 downto 0);
-	     o_instr_20_16 	: out std_logic_vector(4 downto 0);
-	     o_instr_15_11 	: out std_logic_vector(4 downto 0);
-	     o_control_bits 	: out std_logic_vector(14 downto 0));
+	     --o_instr_20_16 	: out std_logic_vector(4 downto 0);
+	     --o_instr_15_11 	: out std_logic_vector(4 downto 0);
+		 o_regDst			: out std_logic_vector(4 downto 0);
+		 o_control_bits 	: out std_logic_vector(14 downto 0));
 end ID_EX_reg;
 
 -- architecture
@@ -93,21 +95,30 @@ begin
 		 i_D	=> i_jumpAddress,
 		 o_Q	=> o_jumpAddress);
 
-  x5: dffg_N
-	generic map(N => 5)
-	port map(i_CLK 	=> i_CLK,
-		 i_RST 	=> i_RST,
-		 i_WE	=> '1',
-		 i_D	=> i_instr_20_16,
-		 o_Q	=> o_instr_20_16);
+--   x5: dffg_N
+-- 	generic map(N => 5)
+-- 	port map(i_CLK 	=> i_CLK,
+-- 		 i_RST 	=> i_RST,
+-- 		 i_WE	=> '1',
+-- 		 i_D	=> i_instr_20_16,
+-- 		 o_Q	=> o_instr_20_16);
+
+--   x6: dffg_N
+-- 	generic map(N => 5)
+-- 	port map(i_CLK 	=> i_CLK,
+-- 		 i_RST 	=> i_RST,
+-- 		 i_WE	=> '1',
+-- 		 i_D	=> i_instr_15_11,
+-- 		 o_Q	=> o_instr_15_11);
 
   x6: dffg_N
 	generic map(N => 5)
 	port map(i_CLK 	=> i_CLK,
 		 i_RST 	=> i_RST,
 		 i_WE	=> '1',
-		 i_D	=> i_instr_15_11,
-		 o_Q	=> o_instr_15_11);
+		 i_D	=> i_regDst,
+		 o_Q	=> o_regDst);
+
 		
   x7: dffg_N
 	generic map(N => 15)
