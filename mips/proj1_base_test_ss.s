@@ -78,7 +78,8 @@ main:
 	nop
 	nop
 	nop
-	addi	$t7, $zero, 0xFFFF1234	#setup for srl, sra
+	#addi	$t7, $zero, 0xFFFF1234	#setup for srl, sra
+	addi	$t7, $zero, 0x1234	#setup for srl, sra
 	nop
 	nop
 	nop
