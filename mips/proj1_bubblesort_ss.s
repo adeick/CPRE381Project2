@@ -94,6 +94,7 @@ whileloop:
   nop
   nop
   nop
+  nop
   lw	$t0, 0($t8)             #load a = a[i]
   nop
   nop
