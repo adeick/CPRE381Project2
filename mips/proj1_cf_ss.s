@@ -26,7 +26,7 @@ stackframetst:
 	nop
 	nop
 	nop
-	addi	$sp, $sp, -16
+	addiu	$sp, $sp, -16
 	slti	$t4, $a2, 0xF00
 	nop
 	nop
@@ -45,14 +45,25 @@ stcktstloop:
 	nop
 	nop
 	lw	$t0, 4($sp)
+	nop
+	nop
+	nop
 	lw	$t1, 8($sp)
+	nop
+	nop
+	nop
 	lw	$t2, 12($sp)
+	nop
+	nop
+	nop
 	add	$t1, $t1, $t0
+	nop
 	nop
 	nop
 	add	$t2, $t2, $t1
 	addi	$t0, $t0, 1
 	nop
+	nop 
 	addi	$a2, $t2, 0
 	addi	$a1, $t1, 0
 	addi	$a0, $t0, 0
@@ -66,10 +77,13 @@ tstdone:
 	lw	$t1, 8($sp)
 	lw	$t2, 12($sp)
 	nop
+	nop
 	add	$t1, $t1, $t0
 	nop
 	nop
+	nop
 	add	$t2, $t2, $t1
+	nop
 	nop
 	nop
 	add	$v1, $v1, $t2
