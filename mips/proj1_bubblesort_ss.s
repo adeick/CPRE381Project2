@@ -47,8 +47,6 @@ main:
   sw	$t1, 0($a0)
   nop
   nop
-  nop
-  nop
   addi	$t1, $zero, 4
   nop
   nop
@@ -56,14 +54,11 @@ main:
   sw	$t1, 4($a0)
   nop
   nop
-  nop
   addi	$t1, $zero, 3
   nop
   nop
   nop
   sw	$t1, 8($a0)
-  nop
-  nop
   nop
   nop
   addi	$t1, $zero, 2
@@ -79,30 +74,14 @@ main:
   nop
   nop
   nop
-  nop
   sw	$t1, 16($a0)
   nop
   nop
-  nop
-  nop
   addi	$t1, $zero, 0
-  nop
-  nop
-  nop
-  nop
 bubble:
   addi  $t8, $sp, 8     #ptr:     original pointer to a[]
-  nop
-  nop
-  nop
-  nop
   addi  $t7, $zero, 0   #bool:    swapped
-  nop
-  nop
-  nop
-  nop
   addi  $t6, $zero, 4   #int:     i
-  nop
   nop
   nop
   nop
@@ -117,10 +96,6 @@ whileloop:
   nop
   nop
   lw	$t0, 0($t8)             #load a = a[i]
-  nop
-  nop
-  nop
-  nop
   lw	$t1, 4($t8)             #load b = a[i+1]
   nop
   nop
@@ -203,4 +178,4 @@ whiledone:
   nop
   nop
   nop
-  halt
+  #halt
