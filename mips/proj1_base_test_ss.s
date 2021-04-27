@@ -3,7 +3,7 @@
 
 .text
 main:
-	li $sp, 0x10011000
+	addi 	$sp, $zero, 0x10011000
 	addi	$t0, $zero, 0x5		#should be 0x5
 	addi	$t1, $zero, 0x10
 	nop
