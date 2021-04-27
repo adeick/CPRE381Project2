@@ -39,13 +39,27 @@ end hazard_detector;
 -- architecture
 architecture mixed of hazard_detector is
 begin
-    process
+    process (
+        i_jump_ID,
+        i_jump_EX,
+        i_jump_MEM,
+        i_jump_WB,
+        i_branch_ID,
+        i_branch_EX,
+        i_branch_MEM,
+        i_branch_WB,
+        i_readAddr1,
+        i_readAddr2,
+        i_writeAddr_ID,
+        i_writeAddr_EX,
+        i_writeEnable_ID,
+        i_writeEnable_EX)
     begin
-        if ((i_writeEnable_ID = '1' AND i_readAddr1 = i_writeAddr_ID)   --Data Hazard on RegRead 1
-        OR  (i_writeEnable_EX = '1' AND i_readAddr1 = i_writeAddr_EX)) then
+        if ((i_writeEnable_ID = '1' AND i_readAddr1 = i_writeAddr_ID AND i_readAddr1 /= "00000")   --Data Hazard on RegRead 1
+        OR  (i_writeEnable_EX = '1' AND i_readAddr1 = i_writeAddr_EX AND i_readAddr1 /= "00000")) then
             o_stall <= '1';
-        elsif ((i_writeEnable_ID = '1' AND i_readAddr2 = i_writeAddr_ID)  --Data Hazard on RegRead 2
-           OR  (i_writeEnable_EX = '1' AND i_readAddr2 = i_writeAddr_EX)) then
+        elsif ((i_writeEnable_ID = '1' AND i_readAddr2 = i_writeAddr_ID AND i_readAddr2 /= "00000")  --Data Hazard on RegRead 2
+           OR  (i_writeEnable_EX = '1' AND i_readAddr2 = i_writeAddr_EX AND i_readAddr2 /= "00000")) then
                o_stall <= '1';
         elsif(
             i_jump_ID   = '1' OR

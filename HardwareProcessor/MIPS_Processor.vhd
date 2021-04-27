@@ -510,14 +510,14 @@ begin
 
   jalAddr: mux2t1_N
     generic map(N => 5) 
-    port map(i_S  => s_Ctrl_ID(4),
+    port map(i_S  => s_Ctrl_ID(13),
              i_D0 => s_Inst_ID(20 downto 16), --rt is taking the place of rd,
              i_D1 => "11111", -- register 31
              o_O  => s_RegDst0);
 
   RegDst: mux2t1_N
     generic map(N => 5) -- Generic of type integer for input/output data width. Default value is 32.
-    port map(i_S  => s_Ctrl_ID(13),
+    port map(i_S  => s_Ctrl_ID(4),
              i_D0 => s_RegDst0, --output of jalAddr mux
              i_D1 => s_Inst_ID(15 downto 11), --rd
              o_O  => s_RegWrAddr_ID);
