@@ -10,11 +10,11 @@ arr:
         .word	1 #4
 .text
 main:
-  lui 	$1, 0x00001001
+  lui 	$at, 0x00001001
   nop
   nop
   nop
-  ori 	$sp, $1, 0x1000
+  ori 	$sp, $at, 0x1000
   nop
   nop
   nop
@@ -74,9 +74,9 @@ bubble:
   nop
   nop
   nop
-  addi  $t8, $sp, 8     #ptr:     original pointer to a[]
-  addi  $t7, $zero, 0   #bool:    swapped
-  addi  $t6, $zero, 4   #int:     i
+  addiu  $t8, $sp, 8     #ptr:     original pointer to a[]
+  addiu  $t7, $zero, 0   #bool:    swapped
+  addiu  $t6, $zero, 4   #int:     i
 
 whileloop:
   nop
