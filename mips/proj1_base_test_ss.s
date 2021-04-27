@@ -24,7 +24,7 @@ main:
 	nop
 	nop
 	nop
-	addu	$t1, $t0, 0x100000	#set $t1 to $t2 plus 32bit immediate
+	addu	$t1, $t0, 0x1000	#set $t1 to $t2 plus 32bit immediate
 	and	$t2, $t0, 0x20		#should be 0x20
 	nop
 	nop
