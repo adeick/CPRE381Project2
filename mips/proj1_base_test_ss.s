@@ -113,6 +113,9 @@ brnchtst:
 	nop
 	nop
 	addi	$t7, $zero, 0x4		#0x4
+	nop
+	nop
+	nop
 	addi	$t8, $t7, 0x10		#0x14
 	jal	jmplnktst
 	nop
