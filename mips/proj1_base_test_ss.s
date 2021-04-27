@@ -143,6 +143,5 @@ postbrnch:
 	nop
 	nop
 	nop
-	addi	$t9, $zero, 1
 	halt
 	
