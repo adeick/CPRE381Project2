@@ -23,6 +23,9 @@ main:
   nop
   nop
   addi	$a0, $sp, 8
+  nop
+  nop
+  nop
   addi	$a1, $zero, 20
   nop
   nop
@@ -72,6 +75,9 @@ main:
   nop
   nop
   addi	$t1, $zero, 0
+  nop
+  nop
+  nop
 bubble:
   addi  $t8, $sp, 8     #ptr:     original pointer to a[]
   nop
@@ -114,8 +120,17 @@ whileloop:
   nop
   nop
   sw	$t1, 0($t8)             #a[i]   = a[i+1]
+  nop
+  nop
+  nop
   sw	$t0, 4($t8)             #a[i+1] = a[i]
+  nop
+  nop
+  nop
   addi	$t7, $zero, 1           #set swapped to true
+  nop
+  nop
+  nop
   j	preloop                 #go to preloop
   nop
   nop
@@ -124,7 +139,13 @@ whileloop:
 
 preloop:
   addi    $t6, $t6, 4           #i++
+  nop
+  nop
+  nop
   addi    $t8, $t8, 4           #a[]++
+  nop
+  nop
+  nop
   j       whileloop             #go back to loop
   nop
   nop
@@ -139,9 +160,21 @@ isswapped:
 
 whiledone:
   lw	$t0, 0($a0)
+  nop
+  nop
+  nop
   lw	$t1, 4($a0)
+  nop
+  nop
+  nop
   lw	$t2, 8($a0)
+  nop
+  nop
+  nop
   lw	$t3, 12($a0)
+  nop
+  nop
+  nop
   lw	$t4, 16($a0)
   nop
   nop
