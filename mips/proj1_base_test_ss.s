@@ -143,5 +143,3 @@ postbrnch:
 	nop
 	nop
 	nop
-	halt
-	
