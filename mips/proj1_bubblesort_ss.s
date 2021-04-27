@@ -10,7 +10,7 @@ arr:
         .word	1 #4
 .text
 main:
-  li 	$sp, 0x10011000
+  addi 	$sp, $zero, 0x10011000
   nop
   nop
   nop
