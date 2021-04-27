@@ -2,7 +2,14 @@
 
 .text
 main:
-	li 	$sp, 0x10011000
+	lui 	$at, 0x00001001
+        nop
+        nop
+        nop
+        ori 	$sp, $at, 0x1000
+	nop
+	nop
+	nop
 	addi	$a0, $zero, 0x0
 	addi	$a1, $zero, 0x1
 	addi	$a2, $zero, 0x2

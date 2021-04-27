@@ -3,7 +3,14 @@
 
 .text
 main:
-	li $sp, 0x10011000
+	lui 	$1, 0x00001001
+        nop
+        nop
+        nop
+        ori 	$sp, $1, 0x1000
+	nop
+	nop
+	nop
 	addi	$t0, $zero, 0x5		#should be 0x5
 	addi	$t1, $zero, 0x10
 	nop
