@@ -106,12 +106,12 @@ main:
 	nop
 	nop
 	beq	$t2, $zero, brnchtst	#$t2 = 0 branch
+	nop
+	nop
+	nop
+	nop
 	
 brnchtst:
-	nop
-	nop
-	nop
-	nop
 	addi	$t7, $zero, 0x4		#0x4
 	nop
 	nop
@@ -126,9 +126,16 @@ brnchtst:
 	nop
 	nop
 	nop
-	nop
 	bne	$t0, 1, abranch
+	nop
+	nop
+	nop
+	nop
 	beq	$t0, 1, bbranch
+	nop
+	nop
+	nop
+	nop
 	
 jmplnktst:
 	nop
@@ -137,21 +144,25 @@ jmplnktst:
 	nop
 	add	$t9, $t7, $t8		#0x18
 	add	$t6, $t7, $t8		#0x18
-	jr	$ra			#return to brnchtst
+	jr	$ra	
+	nop
+	nop
+	nop
+	nop		#return to brnchtst
 	
 abranch:
-	nop
-	nop
-	nop
-	nop
 	j 	postbrnch
+	nop
+	nop
+	nop
+	nop
 	
 bbranch:
-	nop
-	nop
-	nop
-	nop
 	j	postbrnch
+	nop
+	nop
+	nop
+	nop
 	
 postbrnch:
 	halt

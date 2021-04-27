@@ -20,12 +20,12 @@ main:
 	nop
 	addi	$s0, $v0, 0
 	j	finish
+	nop
+	nop
+	nop
+	nop
 
 stackframetst:
-	nop
-	nop
-	nop
-	nop
 	addi	$sp, $sp, -16
 	nop
 	nop
@@ -35,18 +35,22 @@ stackframetst:
 	nop
 	nop
 	beq	$t4, 0, tstdone
+	nop
+	nop
+	nop
+	nop
 	sw	$ra, 0($sp)
 	sw	$a0, 4($sp)
 	sw	$a1, 8($sp)
 	sw	$a2, 12($sp)
 	addi	$v0, $v0, 1
 	j	stcktstloop
+	nop
+	nop
+	nop
+	nop
 	
 stcktstloop:
-	nop
-	nop
-	nop
-	nop
 	lw	$t0, 4($sp)
 	nop
 	nop
@@ -71,6 +75,10 @@ stcktstloop:
 	addi	$a1, $t1, 0
 	addi	$a0, $t0, 0
 	j	stackframetst
+	nop
+	nop
+	nop
+	nop
 tstdone:
 	addi	$sp, $sp, 16
 	nop
@@ -91,12 +99,16 @@ tstdone:
 	nop
 	add	$v1, $v1, $t2
 	bne	$t0, 1, tstdone
+	nop
+	nop
+	nop
+	nop
 	lw	$ra, 0($sp)
 	jr	$ra
+	nop
+	nop
+	nop
+	nop
 	
 finish:
-	nop
-	nop
-	nop
-	nop
 	halt
