@@ -26,7 +26,7 @@ stackframetst:
 	nop
 	nop
 	nop
-	addi	$sp, $sp, -16
+	addiu	$sp, $sp, -16
 	slti	$t4, $a2, 0xF00
 	nop
 	nop
