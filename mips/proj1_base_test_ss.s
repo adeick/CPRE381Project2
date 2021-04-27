@@ -3,7 +3,7 @@
 
 .text
 main:
-	addi 	$sp, $zero, 0xFFFF
+	addi 	$sp, $zero, 0xFFF0
 	nop
 	nop
 	nop
