@@ -25,6 +25,9 @@ main:
 	nop
 	nop
 	addu	$t1, $t0, 0x100	#set $t1 to $t2 plus 32bit immediate
+	nop
+	nop
+	nop
 	and	$t2, $t0, 0x20		#should be 0x20
 	nop
 	nop
