@@ -45,8 +45,16 @@ stcktstloop:
 	nop
 	nop
 	lw	$t0, 4($sp)
+	nop
+	nop
+	nop
 	lw	$t1, 8($sp)
+	nop
+	nop
+	nop
 	lw	$t2, 12($sp)
+	nop
+	nop
 	nop
 	add	$t1, $t1, $t0
 	nop
