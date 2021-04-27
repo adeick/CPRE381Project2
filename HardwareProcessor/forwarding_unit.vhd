@@ -30,12 +30,12 @@ architecture mixed of forwarding_unit is
 begin
     process(i_readAddr1, i_readAddr2, i_writeAddr)
     begin
-        if (i_readAddr1 = i_writeAddr AND i_writeEnable = '1') then
+        if (i_readAddr1 = i_writeAddr AND i_writeEnable = '1' AND i_writeAddr /= "00000") then
             o_fwdSwitch1 <= '1';
         else
             o_fwdSwitch1 <= '0';
         end if;
-        if (i_readAddr2 = i_writeAddr AND i_writeEnable = '1') then
+        if (i_readAddr2 = i_writeAddr AND i_writeEnable = '1' AND i_writeAddr /= "00000") then
             o_fwdSwitch2 <= '1';
         else
             o_fwdSwitch2 <= '0';
