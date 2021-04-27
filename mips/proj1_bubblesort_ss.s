@@ -14,11 +14,14 @@ main:
   nop
   nop
   nop
+  nop
   ori 	$sp, $at, 0x1000
   nop
   nop
   nop
+  nop
   addiu	$sp, $sp, -32
+  nop
   nop
   nop
   nop
@@ -30,7 +33,9 @@ main:
   nop
   nop
   nop
+  nop
   sw	$a1, 4($sp)
+  nop
   nop
   nop
   nop
@@ -38,7 +43,9 @@ main:
   nop
   nop
   nop
+  nop
   sw	$t1, 0($a0)
+  nop
   nop
   nop
   nop
@@ -58,7 +65,9 @@ main:
   nop
   nop
   nop
+  nop
   addi	$t1, $zero, 2
+  nop
   nop
   nop
   nop
@@ -70,11 +79,14 @@ main:
   nop
   nop
   nop
+  nop
   sw	$t1, 16($a0)
   nop
   nop
   nop
+  nop
   addi	$t1, $zero, 0
+  nop
   nop
   nop
   nop
@@ -83,7 +95,9 @@ bubble:
   nop
   nop
   nop
+  nop
   addi  $t7, $zero, 0   #bool:    swapped
+  nop
   nop
   nop
   nop
@@ -91,7 +105,7 @@ bubble:
   nop
   nop
   nop
-
+  nop
 whileloop:
   slt   $t9, $t6, $a1
   nop
@@ -103,6 +117,7 @@ whileloop:
   nop
   nop
   lw	$t0, 0($t8)             #load a = a[i]
+  nop
   nop
   nop
   nop
@@ -119,7 +134,9 @@ whileloop:
   nop
   nop
   nop
+  nop
   sw	$t1, 0($t8)             #a[i]   = a[i+1]
+  nop
   nop
   nop
   nop
@@ -127,7 +144,9 @@ whileloop:
   nop
   nop
   nop
+  nop
   addi	$t7, $zero, 1           #set swapped to true
+  nop
   nop
   nop
   nop
@@ -142,7 +161,9 @@ preloop:
   nop
   nop
   nop
+  nop
   addi    $t8, $t8, 4           #a[]++
+  nop
   nop
   nop
   nop
@@ -163,11 +184,14 @@ whiledone:
   nop
   nop
   nop
+  nop
   lw	$t1, 4($a0)
   nop
   nop
   nop
+  nop
   lw	$t2, 8($a0)
+  nop
   nop
   nop
   nop
