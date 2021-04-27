@@ -18,7 +18,7 @@ main:
   nop
   nop
   nop
-  sub	$sp, $sp, 32
+  addiu	$sp, $sp, -32
   nop
   nop
   nop
