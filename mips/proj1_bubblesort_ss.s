@@ -88,7 +88,13 @@ whileloop:
   nop
   nop
   bne   $t9, 1, isswapped
+  nop
+  nop
+  nop
   lw	$t0, 0($t8)             #load a = a[i]
+  nop
+  nop
+  nop
   lw	$t1, 4($t8)             #load b = a[i+1]
   nop
   nop
