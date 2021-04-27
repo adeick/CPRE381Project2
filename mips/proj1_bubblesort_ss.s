@@ -123,10 +123,6 @@ whileloop:
   nop
 
 preloop:
-  nop
-  nop
-  nop
-  nop
   addi    $t6, $t6, 4           #i++
   addi    $t8, $t8, 4           #a[]++
   j       whileloop             #go back to loop
