@@ -57,8 +57,9 @@ architecture structure of MIPS_processor is
 
 ----------------------------- IF STAGE signals -----------------------------------
 ----------------------------------------------------------------------------------
-  signal s_PCPlusFour_IF   : std_logic_vector(N-1 downto 0);
-
+  signal s_PCPlusFour_IF, s_normAddress   : std_logic_vector(N-1 downto 0);
+  signal s_InstOrNOP : std_logic_vector(31 downto 0);
+  signal s_stall : std_logic;
 
 ----------------------------- ID STAGE signals -----------------------------------
 ----------------------------------------------------------------------------------
@@ -74,9 +75,15 @@ architecture structure of MIPS_processor is
   signal s_funcCode : std_logic_vector(5 downto 0);--instruction bits[5-0]
 
   -- reg file signals
-  signal s_RegOutReadData1_ID : std_logic_vector(N-1 downto 0);
-  signal s_RegOutReadData2_ID : std_logic_vector(N-1 downto 0);
+  signal s_RegOutReadData1 : std_logic_vector(N-1 downto 0);
+  signal s_RegOutReadData2 : std_logic_vector(N-1 downto 0);
+  signal s_RegWrAddr_ID      : std_logic_vector(4 downto 0);
 
+  -- forwarding signals
+  signal s_fwdSwitch1, s_fwdSwitch2 : std_logic;
+
+  --final signals
+  signal s_DecodeData1_ID, s_DecodeData2_ID : std_logic_vector(31 downto 0);
 
 ----------------------------- EX STAGE signals -----------------------------------
 ----------------------------------------------------------------------------------
@@ -94,7 +101,7 @@ architecture structure of MIPS_processor is
   signal s_RegDst0      : std_logic_vector(4 downto 0);
   signal s_RegWrAddr_EX      : std_logic_vector(4 downto 0);
 
-
+  
   --alu
   signal s_ALUSrc    : std_logic; 
   signal s_immMuxOut : std_logic_vector(N-1 downto 0); --Output of Immediate Mux (ALU 2nd input)
@@ -212,6 +219,34 @@ signal s1, s2, s3 : std_logic; --don't care output from adder and ALU
     o_Q   : out std_logic_vector(31 downto 0));--=> s_NextInstAddr);
   end component;
 
+  component forwarding_unit is
+	port(i_readAddr1  	  	: in std_logic_vector(4 downto 0);
+	     i_readAddr2	  	: in std_logic_vector(4 downto 0);
+	     i_writeAddr	  	: in std_logic_vector(4 downto 0);
+         i_writeEnable      : in std_logic;
+         o_fwdSwitch1		: out std_logic; --1 if forwarding should be used, 0 otherwise
+         o_fwdSwitch2		: out std_logic);
+    end component;
+
+    component hazard_detector is
+        port(   i_jump_ID          : in std_logic; --Control Hazards
+                i_jump_EX          : in std_logic;
+                i_jump_MEM         : in std_logic;
+                i_jump_WB          : in std_logic;
+                i_branch_ID        : in std_logic;
+                i_branch_EX        : in std_logic;
+                i_branch_MEM       : in std_logic;
+                i_branch_WB        : in std_logic;
+        
+                i_readAddr1  	  	: in std_logic_vector(4 downto 0); --Data Hazards
+                i_readAddr2	  	    : in std_logic_vector(4 downto 0);
+                i_writeAddr_ID      : in std_logic_vector(4 downto 0);
+                i_writeAddr_EX      : in std_logic_vector(4 downto 0);--Forwarding can handle if in WB stage
+                i_writeEnable_ID    : in std_logic;
+                i_writeEnable_EX    : in std_logic;
+        
+                o_stall    		: out std_logic); --1 if stalling, 0 otherwise
+        end component;
 ------------- Stages Components --------------------
   component IF_ID_reg is 
 	port(i_CLK		: in std_logic;
@@ -231,17 +266,19 @@ signal s1, s2, s3 : std_logic; --don't care output from adder and ALU
 	     i_readData2 	: in std_logic_vector(31 downto 0);
 	     i_signExtImmed 	: in std_logic_vector(31 downto 0);
 	     i_jumpAddress 	: in std_logic_vector(31 downto 0);
-	     i_instr_20_16 	: in std_logic_vector(4 downto 0);
-	     i_instr_15_11 	: in std_logic_vector(4 downto 0);
-	     i_control_bits 	: in std_logic_vector(14 downto 0);
+	     --i_instr_20_16 	: in std_logic_vector(4 downto 0);
+	     --i_instr_15_11 	: in std_logic_vector(4 downto 0);
+       i_regDst 	: in std_logic_vector(4 downto 0);
+       i_control_bits 	: in std_logic_vector(14 downto 0);
 
 	     o_PC_4		: out std_logic_vector(31 downto 0);
 	     o_readData1 	: out std_logic_vector(31 downto 0);
 	     o_readData2 	: out std_logic_vector(31 downto 0);
 	     o_signExtImmed 	: out std_logic_vector(31 downto 0);
 	     o_jumpAddress 	: out std_logic_vector(31 downto 0);
-	     o_instr_20_16 	: out std_logic_vector(4 downto 0);
-	     o_instr_15_11 	: out std_logic_vector(4 downto 0);
+	     --o_instr_20_16 	: out std_logic_vector(4 downto 0);
+	     --o_instr_15_11 	: out std_logic_vector(4 downto 0);
+       o_regDst 	: out std_logic_vector(4 downto 0);
 	     o_control_bits 	: out std_logic_vector(14 downto 0));
   end component;
 
@@ -364,11 +401,46 @@ begin
              o_Y      => s_PCPlusFour_IF,--out std_logic_vector(N-1 downto 0);
              o_Cout   => s1);--out std_logic);
 
+    hazardDetection: hazard_detector 
+    port map(   
+        i_jump_ID        => s_Ctrl_ID(1),  --: in std_logic; --Control Hazards
+        i_jump_EX        => s_Ctrl_EX(1),  --: in std_logic;
+        i_jump_MEM       => s_jump_MEM,  --: in std_logic;
+        i_jump_WB        => s_jump_WB,  --: in std_logic;
+        i_branch_ID      => s_Ctrl_ID(3),  --: in std_logic;
+        i_branch_EX      => s_Ctrl_EX(3),  --: in std_logic;
+        i_branch_MEM     => s_Branch_MEM,  --: in std_logic;
+        i_branch_WB      => s_branch_check_WB,  --: in std_logic; --Named different because we know if we are 
+                                                                    --branching or not
+        i_readAddr1  	   => s_Inst(25 downto 21),	--: in std_logic_vector(4 downto 0); --Data Hazards
+        i_readAddr2	  	 => s_Inst(20 downto 16),  --: in std_logic_vector(4 downto 0);
+        i_writeAddr_ID   => s_RegWrAddr_ID,  --: in std_logic_vector(4 downto 0);
+        i_writeAddr_EX   => s_RegWrAddr_EX,  --: in std_logic_vector(4 downto 0); --Forwarding can handle if in MEM stage
+        i_writeEnable_ID => s_Ctrl_ID(5),  --: in std_logic;                    --If in WB stage, it won't need forwarding
+        i_writeEnable_EX => s_RegWr_EX,  --: in std_logic;
+
+        o_stall    		 =>  s_stall); --: out std_logic); --1 if stalling, 0 otherwise
+
+
+    stallAddressing : mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_stall,
+            i_D0 => s_PCPlusFour_IF, --PC+4
+            i_D1 => s_IMemAddr, --PC
+            o_O  => s_normAddress); --input to branch Mux
+
+    stallInstruction : mux2t1_N 
+    generic map(N => 32) 
+    port map(i_S  => s_stall,
+            i_D0 => s_Inst, --Normal Instruction if no stall
+            i_D1 => x"00000000", --nop
+            o_O  => s_InstOrNOP); --input to branch Mux
+
   IF_ID: IF_ID_reg
     port map(i_CLK	   => iCLK,
 	     i_RST	   => iRST,
 	     i_PC_4	   => s_PCPlusFour_IF,
-	     i_instruction => s_Inst,
+	     i_instruction => s_InstOrNOP,
 	     o_PC_4	   => s_PCPlusFour_ID,
 	     o_instruction => s_Inst_ID);
 
@@ -394,43 +466,84 @@ begin
   s_jumpAddress_ID(27 downto 2) <= s_Inst_ID(25 downto 0); --Instruction bits[25-0] into bits[27-2] of jumpAddr
   s_jumpAddress_ID(31 downto 28) <= s_PCPlusFour_ID(31 downto 28); --PC+4 bits[31-28] into bits[31-28] of jumpAddr
 
+    --Forwarding Unit--
+    forward: forwarding_unit
+    port map(i_readAddr1  	  	=>  s_Inst_ID(25 downto 21),--in std_logic_vector(4 downto 0);
+             i_readAddr2	  	=>  s_Inst_ID(20 downto 16),--in std_logic_vector(4 downto 0);
+             i_writeAddr	  	=>  s_RegWrAddr,--in std_logic_vector(4 downto 0);
+             i_writeEnable      =>  s_RegWr,--in std_logic;
+             o_fwdSwitch1		=>  s_fwdSwitch1,--out std_logic; --1 if forwarding should be used, 0 otherwise
+             o_fwdSwitch2		=>  s_fwdSwitch2);--out std_logic);
+
   --RegFile: --
   registers: regfile 
     port map(clk   => iCLK,--std_logic;
-	     i_wA  => s_RegWrAddr ,--std_logic_vector(4 downto 0);
-	     i_wD  => s_RegWrData ,--std_logic_vector(31 downto 0);
-	     i_wC  => s_RegWr ,--std_logic;
-	     i_r1  => s_Inst_ID(25 downto 21),-- rs;
-	     i_r2  => s_Inst_ID(20 downto 16),-- rt;
-	     reset => iRST,--std_logic;
-    	     o_d1  => s_RegOutReadData1_ID,-- std_logic_vector(31 downto 0);
-    	     o_d2  => s_RegOutReadData2_ID);-- std_logic_vector(31 downto 0));
+	    i_wA  => s_RegWrAddr ,--std_logic_vector(4 downto 0);
+	    i_wD  => s_RegWrData ,--std_logic_vector(31 downto 0);
+	    i_wC  => s_RegWr ,--std_logic;
+	    i_r1  => s_Inst_ID(25 downto 21),-- rs;
+	    i_r2  => s_Inst_ID(20 downto 16),-- rt;
+	    reset => iRST,--std_logic;
+    	o_d1  => s_RegOutReadData1,-- std_logic_vector(31 downto 0);
+    	o_d2  => s_RegOutReadData2);-- std_logic_vector(31 downto 0));
+
+    --Forwarding Muxes
+    fwdMux1: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_fwdSwitch1,
+          i_D0 => s_RegOutReadData1,
+          i_D1 => s_RegWrData,
+          o_O  => s_DecodeData1_ID);
+
+    fwdMux2: mux2t1_N
+    generic map(N => 32) 
+    port map(i_S  => s_fwdSwitch2,
+          i_D0 => s_RegOutReadData2,
+          i_D1 => s_RegWrData,
+          o_O  => s_DecodeData2_ID);
+
 
   signExtender: extender
     port map(i_I => s_imm16_ID, --in std_logic_vector(15 downto 0);     -- Data value input
 	     i_C => s_Ctrl_ID(2), -- signExt control bit; --0 for zero, 1 for sign-extension
              o_O => s_imm32_ID); --out std_logic_vector(31 downto 0));   -- Data value output);
 
+  jalAddr: mux2t1_N
+    generic map(N => 5) 
+    port map(i_S  => s_Ctrl_ID(4),
+             i_D0 => s_Inst_ID(20 downto 16), --rt is taking the place of rd,
+             i_D1 => "11111", -- register 31
+             o_O  => s_RegDst0);
+
+  RegDst: mux2t1_N
+    generic map(N => 5) -- Generic of type integer for input/output data width. Default value is 32.
+    port map(i_S  => s_Ctrl_ID(13),
+             i_D0 => s_RegDst0, --output of jalAddr mux
+             i_D1 => s_Inst_ID(15 downto 11), --rd
+             o_O  => s_RegWrAddr_ID);
+
   ID_EX: ID_EX_reg
     port map(i_CLK	    => iCLK,
 	     i_RST	    => iRST,
 
 	     i_PC_4	    => s_PCPlusFour_ID,
-	     i_readData1    => s_RegOutReadData1_ID,
-	     i_readData2    => s_RegOutReadData2_ID,
+	     i_readData1    => s_DecodeData1_ID, --s_RegOutReadData1, 
+	     i_readData2    => s_DecodeData2_ID, --s_RegOutReadData2, 
 	     i_signExtImmed => s_imm32_ID,
 	     i_jumpAddress  => s_jumpAddress_ID,
-	     i_instr_20_16  => s_Inst_ID(20 downto 16), -- rt
-	     i_instr_15_11  => s_Inst_ID(15 downto 11), -- rd
-	     i_control_bits => s_Ctrl_ID,
+	     --i_instr_20_16  => s_Inst_ID(20 downto 16), -- rt
+	     --i_instr_15_11  => s_Inst_ID(15 downto 11), -- rd
+	     i_regDst => s_RegWrAddr_ID,
+       i_control_bits => s_Ctrl_ID,
 
-	     o_PC_4	    => s_PCPlusFour_EX,
+	     o_PC_4	        => s_PCPlusFour_EX,
 	     o_readData1    => s_RegOutReadData1_EX,
 	     o_readData2    => s_RegOutReadData2_EX,
 	     o_signExtImmed => s_imm32_EX,
 	     o_jumpAddress  => s_jumpAddress_EX,
-	     o_instr_20_16  => s_rt_EX,
-	     o_instr_15_11  => s_rd_EX,
+	     --o_instr_20_16  => s_rt_EX,--
+	     --o_instr_15_11  => s_rd_EX,--remove
+       o_regDst => s_RegWrAddr_EX,
 	     o_control_bits => s_Ctrl_EX);
 
 ------------------------------------------------------------------------------------
@@ -444,7 +557,7 @@ begin
   s_ALUOp(3 downto 0) <= s_Ctrl_EX(11 downto 8);
   s_ALUSrc 	      <= s_Ctrl_EX(12);
   s_jal_EX 	      <= s_Ctrl_EX(13);
-  s_RegDst_EX         <= s_Ctrl_EX(4);
+  s_RegDst_EX     <= s_Ctrl_EX(4);
 
   -- s_shamt <= s_imm32_EX(4 downto 0);
   s_shamt <= s_imm32_EX(10 downto 6);
@@ -494,21 +607,22 @@ begin
              i_D0 => s_RegOutReadData2_EX,
              i_D1 => s_imm32_EX,
              o_O  => s_immMuxOut);
+----------------------------------------v
+  --Moved these Muxes to Decode stage
+  -- RegDst: mux2t1_N
+  --   generic map(N => 5) -- Generic of type integer for input/output data width. Default value is 32.
+  --   port map(i_S  => s_RegDst_EX,
+  --            i_D0 => s_RegDst0, --output of jalAddr mux
+  --            i_D1 => s_rd_EX, --rd
+  --            o_O  => s_RegWrAddr_EX);
 
-  RegDst: mux2t1_N
-    generic map(N => 5) -- Generic of type integer for input/output data width. Default value is 32.
-    port map(i_S  => s_RegDst_EX,
-             i_D0 => s_RegDst0, --output of jalAddr mux
-             i_D1 => s_rd_EX, --rd
-             o_O  => s_RegWrAddr_EX);
-
-  jalAddr: mux2t1_N
-    generic map(N => 5) 
-    port map(i_S  => s_jal_EX,
-             i_D0 => s_rt_EX, --rt is taking the place of rd,
-             i_D1 => "11111", -- register 31
-             o_O  => s_RegDst0);
-
+  -- jalAddr: mux2t1_N
+  --   generic map(N => 5) 
+  --   port map(i_S  => s_jal_EX,
+  --            i_D0 => s_rt_EX, --rt is taking the place of rd,
+  --            i_D1 => "11111", -- register 31
+  --            o_O  => s_RegDst0);
+-----------------------------------------^
 
   EX_MEM: EX_MEM_reg
     port map(i_CLK	     => iCLK,
@@ -636,7 +750,7 @@ begin
   Branch: mux2t1_N
     generic map(N => 32) 
     port map(i_S  => s_branch_check_WB,
-             i_D0 => s_PCPlusFour_IF, 
+             i_D0 => s_normAddress, --PC+4, or PC if stalled 
              i_D1 => s_branchAddress_WB,
              o_O  => s_normalOrBranch);
   Jump: mux2t1_N
