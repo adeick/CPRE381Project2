@@ -20,7 +20,7 @@ main:
   nop
   nop
   nop
-  addiu	$sp, $sp, -32
+  addi	$sp, $sp, -32
   nop
   nop
   nop
