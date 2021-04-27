@@ -28,6 +28,9 @@ main:
   nop
   nop
   sw	$a1, 4($sp)
+  nop
+  nop
+  nop
   addi	$t1, $zero, 5
   nop
   nop
@@ -38,21 +41,33 @@ main:
   nop
   nop
   sw	$t1, 4($a0)
+  nop
+  nop
+  nop
   addi	$t1, $zero, 3
   nop
   nop
   nop
   sw	$t1, 8($a0)
+  nop
+  nop
+  nop
   addi	$t1, $zero, 2
   nop
   nop
   nop
   sw	$t1, 12($a0)
+  nop
+  nop
+  nop
   addi	$t1, $zero, 1
   nop
   nop
   nop
   sw	$t1, 16($a0)
+  nop
+  nop
+  nop
   addi	$t1, $zero, 0
 bubble:
   nop
