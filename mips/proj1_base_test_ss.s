@@ -139,10 +139,5 @@ jmplnktst:
 	jr	$ra			#return to brnchtst
 	
 postbrnch:
-	nop
-	nop
-	nop
-	nop
-	nop
 	halt
 	
