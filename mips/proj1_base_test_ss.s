@@ -138,10 +138,6 @@ brnchtst:
 	nop
 	
 jmplnktst:
-	nop
-	nop
-	nop
-	nop
 	add	$t9, $t7, $t8		#0x18
 	add	$t6, $t7, $t8		#0x18
 	jr	$ra	
