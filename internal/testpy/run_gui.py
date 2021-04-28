@@ -5,7 +5,7 @@ import test_framework
 #Path to the mips folder
 mipsFolder = r'mips'
 
-allSelected = False
+
 
 def guiMain():
 
@@ -18,8 +18,6 @@ def guiMain():
     menuItems = tk.Frame(bg="gray60",master=window)
 
     secondMenuItems = tk.Frame(bg="gray60",master=window)
-
-    thirdMenuItems = tk.Frame(bg="gray60",master=window)
 
     
     #This Makes a button
@@ -35,7 +33,7 @@ def guiMain():
 
 
 
-    #This makes the Compile Button
+    #This makes one of the menu checkboxes
     global compileASM
     compileASM=tk.IntVar()
     tk.Checkbutton(
@@ -46,8 +44,6 @@ def guiMain():
             offvalue=0,
             bg="gray60"
             ).pack(side=tk.LEFT, anchor=tk.W)
-
-    compileASM.set(1)
 
     #Adds padding
     tk.Label(
@@ -136,42 +132,14 @@ def guiMain():
             bg="gray60"
             ).pack(anchor=tk.W)
 
-
-
-    #This Makes a button
-    selectAll = tk.Button(thirdMenuItems, bg="gray64", text="Select All", width=25, command=selectAllFiles)
-
-    selectAll.pack(side=tk.LEFT)
-
-
-
     #This packs the menu and check boxes
     secondMenuItems.pack()
     menuItems.pack()
     fileSelectFrame.pack()
-    thirdMenuItems.pack()
 
 
     #This is the main loop for the window
     window.mainloop()
-
-
-def selectAllFiles():
-
-    global allSelected
-
-    if(allSelected):
-        for x in range(0, len(var)):
-            var[x].set(0)
-        allSelected = False
-
-    else:
-        for x in range(0, len(var)):
-            var[x].set(1)
-        allSelected = True
-
-
-    
 
 
 #This method is run when the "Run" button is pressed

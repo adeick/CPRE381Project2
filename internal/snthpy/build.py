@@ -29,43 +29,35 @@ def build_all(dir='internal/QuartusWork'):
 
     print(f'\nStarting compilation at {str(starttime)}\n')
 
-    with open('temp/synth_error.log','w') as synth_log:
+    # starting mapping
+    exit_code = subprocess.call(
+        [f'{quartus_bin_dir}\\quartus_map','--read_settings_files=on','--write_settings_files=off',pname,'-c',pname],
+        cwd=dir
+    )
 
-        # starting mapping
-        exit_code = subprocess.call(
-            [f'{quartus_bin_dir}\\quartus_map','--read_settings_files=on','--write_settings_files=off',pname,'-c',pname],
-            cwd=dir,
-            stdout = synth_log,
-            stderr = synth_log
-        )
+    if exit_code != 0:
+        print('Error during compilation or mapping')
+        return False
 
-        if exit_code != 0:
-            print('Error during compilation or mapping')
-            return False
+    # starting fitting
+    exit_code = subprocess.call(
+        [f'{quartus_bin_dir}\\quartus_fit','--read_settings_files=on','--write_settings_files=off',pname,'-c',pname],
+        cwd=dir
+    )
 
-        # starting fitting
-        exit_code = subprocess.call(
-            [f'{quartus_bin_dir}\\quartus_fit','--read_settings_files=on','--write_settings_files=off',pname,'-c',pname],
-            cwd=dir,
-            stdout = synth_log,
-            stderr = synth_log
-        )
+    if exit_code != 0:
+        print('Error during fitting')
+        return False
 
-        if exit_code != 0:
-            print('Error during fitting')
-            return False
+    # starting assembly
+    exit_code = subprocess.call(
+        [f'{quartus_bin_dir}\\quartus_asm','--read_settings_files=on','--write_settings_files=off',pname,'-c',pname],
+        cwd=dir
+    )
 
-        # starting assembly
-        exit_code = subprocess.call(
-            [f'{quartus_bin_dir}\\quartus_asm','--read_settings_files=on','--write_settings_files=off',pname,'-c',pname],
-            cwd=dir,
-            stdout = synth_log,
-            stderr = synth_log
-        )
-
-        if exit_code != 0:
-            print('Error during assembly')
-            return False
+    if exit_code != 0:
+        print('Error during assembly')
+        return False
 
     # generate timing
     with open('temp/timing_dump.txt','w') as timing_log:
