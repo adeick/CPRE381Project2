@@ -43,8 +43,8 @@ main_loop_body:
         lw      $4,24($fp)
         la 	$ra, trucks
         j     is_visited
-        trucks:
 
+trucks:
         xori    $2,$2,0x1
         andi    $2,$2,0x00ff
         beq     $2,$0,kick
@@ -53,7 +53,8 @@ main_loop_body:
         # addi 	$k0, $k0,1# breakpoint
         la 	$ra, billowy
         j     	topsort
-        billowy:
+
+billowy:
 
 kick:
         lw      $2,24($fp)
