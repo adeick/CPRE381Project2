@@ -19,43 +19,10 @@ main:
       nop
       nop
   addi	$sp, $sp, -32
-      nop
-      nop
-      nop
-  addi	$a0, $sp, 8
-  addi	$a1, $zero, 20
-      nop
-      nop
-      nop
-  sw	$a1, 4($sp)
-  addi	$t1, $zero, 5
-      nop
-      nop
-      nop
-  sw	$t1, 0($a0)
-  addi	$t1, $zero, 4
-      nop
-      nop
-      nop
-  sw	$t1, 4($a0)
-  addi	$t1, $zero, 3
-      nop
-      nop
-      nop
-  sw	$t1, 8($a0)
-  addi	$t1, $zero, 2
-      nop
-      nop
-      nop
-  sw	$t1, 12($a0)
-  addi	$t1, $zero, 1
-      nop
-      nop
-      nop
-  sw	$t1, 16($a0)
-  addi	$t1, $zero, 0
+  la	$a0, arr
+  li	$a1, 20
 bubble:
-  addi  $t8, $sp, 8     #ptr:     original pointer to a[]
+  la	$t8, arr        #ptr:     original pointer to a[]
   addi  $t7, $zero, 0   #bool:    swapped
   addi  $t6, $zero, 4   #int:     i
       nop
