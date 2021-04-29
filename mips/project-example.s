@@ -17,12 +17,15 @@ main:
     	lw	$t0, 0($t7)
     	lw	$t1, 4($t7)
     	lw	$t2, 8($t7)
+    	nop
     	addi	$t0, $t0, 0x10		#0x12
     	addi	$t1, $t1, 0x15		#0x1a
     	addi	$t2, $t2, 0x20		#0x28
+    	nop
     	sw	$t0, 0($t7)
     	sw	$t1, 4($t7)
     	sw	$t2, 8($t7)
+    	nop
     	j	end
     	nop
     	nop
