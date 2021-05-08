@@ -526,14 +526,14 @@ begin
     port map(i_CLK	    => iCLK,
 	     i_RST	    => iRST,
 
-	     i_PC_4	    => s_PCPlusFour_ID,
+	     i_PC_4	        => s_PCPlusFour_ID,
 	     i_readData1    => s_DecodeData1_ID, --s_RegOutReadData1, 
 	     i_readData2    => s_DecodeData2_ID, --s_RegOutReadData2, 
 	     i_signExtImmed => s_imm32_ID,
 	     i_jumpAddress  => s_jumpAddress_ID,
 	     --i_instr_20_16  => s_Inst_ID(20 downto 16), -- rt
 	     --i_instr_15_11  => s_Inst_ID(15 downto 11), -- rd
-	     i_regDst => s_RegWrAddr_ID,
+	     i_regDst       => s_RegWrAddr_ID,
        i_control_bits => s_Ctrl_ID,
 
 	     o_PC_4	        => s_PCPlusFour_EX,
@@ -628,26 +628,25 @@ begin
     port map(i_CLK	     => iCLK,
 	     i_RST	     => iRST,
 
-	     i_PC_4	     => s_PCPlusFour_EX,
+	     i_PC_4	         => s_PCPlusFour_EX,
 	     i_finalJumpAddr => s_finalJumpAddress_EX,
 	     i_branchAddr    => s_branchAddress_EX,
 	     i_readData2     => s_RegOutReadData2_EX,
-	     i_aluOut	     => s_aluOut_EX,
-
+	     i_aluOut	       => s_aluOut_EX,
 	     i_writeReg      => s_RegWrAddr_EX,
 
 	-- one bit inputs
-	     i_zero	     => s_ALUBranch_EX,
+	     i_zero	         => s_ALUBranch_EX,
 	     i_overflow	     => s_Ovfl_EX,
-	     i_jal	     => s_jal_EX,
+	     i_jal	         => s_jal_EX,
 	     i_MemtoReg	     => s_MemtoReg_EX,
-	     i_weMem	     => s_DMemWr_EX,
-	     i_weReg	     => s_RegWr_EX,
-	     i_branch	     => s_Branch_EX,
-	     i_j	     => s_jump_EX,
-	     i_halt	     => s_Halt_EX,
+	     i_weMem	       => s_DMemWr_EX,
+	     i_weReg	       => s_RegWr_EX,
+	     i_branch	       => s_Branch_EX,
+	     i_j	           => s_jump_EX,
+	     i_halt	         => s_Halt_EX,
 
-	     o_PC_4	     => s_PCPlusFour_MEM,
+	     o_PC_4	         => s_PCPlusFour_MEM,
 	     o_finalJumpAddr => s_finalJumpAddress_MEM,
 	     o_branchAddr    => s_branchAddress_MEM,
 	     o_readData2     => s_RegOutReadData2_MEM,
@@ -690,39 +689,39 @@ begin
     port map(i_CLK	     => iCLK,
 	     i_RST	     => iRST,
 
-	     i_PC_4	     => s_PCPlusFour_MEM,
+	     i_PC_4	         => s_PCPlusFour_MEM,
 	     i_finalJumpAddr => s_finalJumpAddress_MEM,
 	     i_branchAddr    => s_branchAddress_MEM,
 	     i_memReadData   => s_DMemOut,
-	     i_aluOut	     => s_aluOut_MEM,
+	     i_aluOut	       => s_aluOut_MEM,
 
 	     i_writeReg      => s_RegWrAddr_MEM,
 
 	-- one bit inputs
 	     i_branchCheck   => s_branch_check_MEM,
 	     i_overflow      => s_Ovfl_MEM,
-	     i_jal	     => s_jal_MEM,
+	     i_jal	         => s_jal_MEM,
 	     i_MemtoReg	     => s_MemtoReg_MEM,
-	     i_weReg	     => s_RegWr_MEM,
-	     i_j	     => s_jump_MEM,
-	     i_halt	     => s_Halt_MEM,
+	     i_weReg	       => s_RegWr_MEM,
+	     i_j	           => s_jump_MEM,
+	     i_halt	         => s_Halt_MEM,
 
-	     o_PC_4	     => s_PCPlusFour_WB,
+	     o_PC_4	         => s_PCPlusFour_WB,
 	     o_finalJumpAddr => s_finalJumpAddress_WB ,
 	     o_branchAddr    => s_branchAddress_WB,
 	     o_memReadData   => s_memReadData_WB,
-	     o_aluOut	     => s_aluOut_WB,
+	     o_aluOut	       => s_aluOut_WB,
 
 	     o_writeReg      => s_RegWrAddr,
 
 	-- one bit outputs
 	     o_branchCheck   => s_branch_check_WB,
 	     o_overflow      => s_Ovfl,
-	     o_jal	     => s_jal_WB,
+	     o_jal	         => s_jal_WB,
 	     o_MemtoReg	     => s_MemtoReg_WB,
-	     o_weReg	     => s_RegWr,
-	     o_j	     => s_jump_WB,
-	     o_halt	     => s_Halt);
+	     o_weReg	       => s_RegWr,
+	     o_j	           => s_jump_WB,
+	     o_halt	         => s_Halt);
         
 ------------------------------------------------------------------------------------
 
